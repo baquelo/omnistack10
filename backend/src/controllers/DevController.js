@@ -36,5 +36,37 @@ module.exports = {
         }
     
         return response.json(dev);
-    }
+    },
+
+    async update(request, response) {
+        const { id } = request.params;
+        const { name, techs, bio, latitude, longitude, avatar_url } = request.body;
+
+        const techsArray = parseStringAsArray(techs);
+
+        const dev = await Dev.findOne({_id: id});
+
+        dev.name = name;
+        dev.bio = bio;
+        dev.location = {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+        };
+        dev.avatar_url = avatar_url;
+        dev.techs = techsArray;
+
+        dev.save();
+
+        return response.json(dev);
+    },
+
+    async destroy(request, response) {
+        const { id } = request.params;
+
+        const dev = await Dev.findOne( { _id: id });
+
+        dev.remove();
+
+        return response.json(dev);
+    },
 };
